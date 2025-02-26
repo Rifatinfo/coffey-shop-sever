@@ -30,6 +30,7 @@ async function run() {
     // Send a ping to confirm a successful connection
 
     const coffeyCollection = client.db("coffeyShopBD").collection("coffey");
+    const userCollection = client.db("coffeyShopBD").collection("users");
 
     app.post('/coffey', async (req, res) => {
       const newCoffey = req.body;
@@ -77,6 +78,16 @@ async function run() {
       const result = await coffeyCollection.deleteOne(query)
       res.send(result);
     })
+
+
+    // users related api
+    app.post('/users', async (req, res) => {
+      const newUser = req.body;
+      console.log('creating new user', newUser);
+      const result = await userCollection.insertOne(newUser);
+      res.send(result);
+    })
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
