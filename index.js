@@ -47,25 +47,25 @@ async function run() {
 
     app.get('/coffey/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await coffeyCollection.findOne(query);
       res.send(result);
     })
 
     app.put('/coffey/:id', async (req, res) => {
       const id = req.params.id;
-      const filter = { _id : new ObjectId(id)};
+      const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const updateCoffey = req.body;
       const Coffey = {
         $set: {
-          email : updateCoffey.email,
-          chef : updateCoffey.chef,
-          supplier : updateCoffey.supplier,
-          category : updateCoffey.category,
-          taste : updateCoffey.taste,
-          details : updateCoffey.details,
-          photo : updateCoffey.photo
+          email: updateCoffey.email,
+          chef: updateCoffey.chef,
+          supplier: updateCoffey.supplier,
+          category: updateCoffey.category,
+          taste: updateCoffey.taste,
+          details: updateCoffey.details,
+          photo: updateCoffey.photo
         },
       };
       const result = await coffeyCollection.updateOne(filter, Coffey, options);
@@ -79,7 +79,6 @@ async function run() {
       res.send(result);
     })
 
-
     // users related api
     app.post('/users', async (req, res) => {
       const newUser = req.body;
@@ -88,6 +87,31 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/users', async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.patch('/users', async (req, res) => {
+      const email = req.body.email;
+      const filter = {email};
+      const updatedDoc = {
+        $set : {
+          lastSignInTime : req.body?.lastSignInTime
+        }
+      }
+
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    }) 
+
+    app.delete('/users/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
